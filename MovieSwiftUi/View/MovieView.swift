@@ -26,12 +26,17 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
+let apiRequest = MovieClient()
+
 struct NowPlayView: View {
+    @State private var movies = [Movie]()
+    
     var body: some View {
         NavigationView {
-            List(0..<15) { item in
-                MovieItem(movie: "Now Play Movie Title")
+            List(movies, id: \.id) { movie in
+                MovieItem(movie: movie)
             }
+            .onAppear(perform: loadData)
             .navigationBarTitle("Now Play")
             .navigationViewStyle(StackNavigationViewStyle())
         }
@@ -42,14 +47,28 @@ struct NowPlayView: View {
             }
         }.tag(0)
     }
+    
+    func loadData() {
+        apiRequest.getNowPlaying { (movies, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            self.movies = movies
+        }
+    }
 }
 
+
 struct UpcomingView: View {
+    @State private var movies = [Movie]()
+    
     var body: some View {
         NavigationView {
-            List(0..<15) { item in
-                MovieItem(movie: "Upcoming Movie Title")
+            List(movies, id: \.id) { movie in
+                MovieItem(movie: movie)
             }
+            .onAppear(perform: loadData)
             .navigationBarTitle("Upcoming")
             .navigationViewStyle(StackNavigationViewStyle())
         }
@@ -61,14 +80,27 @@ struct UpcomingView: View {
         }
         .tag(1)
     }
+    
+    func loadData() {
+        apiRequest.getUpcoming { (movies, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            self.movies = movies
+        }
+    }
 }
 
 struct FavoriteView: View {
+    @State private var movies = [Movie]()
+    
     var body: some View {
         NavigationView {
-            List(0..<15) { item in
-                MovieItem(movie: "Favorite Movie Title")
+            List(movies, id: \.id) { movie in
+                MovieItem(movie: movie)
             }
+            .onAppear(perform: loadData)
             .navigationBarTitle("Favorite")
             .navigationViewStyle(StackNavigationViewStyle())
         }
@@ -80,15 +112,25 @@ struct FavoriteView: View {
         }
         .tag(2)
     }
+    
+    func loadData() {
+        apiRequest.getNowPlaying { (movies, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            self.movies = movies
+        }
+    }
 }
 
 struct MovieItem: View {
-    var movie: String
+    var movie: Movie
     var body: some View {
         return NavigationLink(destination: MovieDetail()) {
             HStack {
-               Image(systemName: "photo")
-               Text(movie)
+                Image(systemName: "photo")
+                Text(movie.title)
                    .padding(.leading, 9)
             }
         }
